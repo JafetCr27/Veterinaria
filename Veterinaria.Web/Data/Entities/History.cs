@@ -22,5 +22,9 @@
         [Display(Name = "Fecha")]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)] public DateTime DateLocal => Date.ToLocalTime();
+
+        public ServiceType ServiceType { get; set; }
+
+        public Pet Pet { get; set; }
     }
 }

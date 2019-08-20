@@ -1,5 +1,6 @@
 ﻿namespace Veterinaria.Web.Data.Entities
 {
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     public class ServiceType
     {
@@ -9,5 +10,7 @@
         [MaxLength(50)]
         [Display(Name = "Tipo Servicio")]
         public string Name { get; set; }
+
+        public ICollection<History> Histories { get; set; }
     }
 }

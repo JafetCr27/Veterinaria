@@ -21,6 +21,7 @@ namespace Veterinaria.Web.Data.Entities
 
         public Owner Owner { get; set; }
 
+        //Crea relacion de muchos a 1 
         public PetType PetType { get; set; }
 
         [Display(Name = "Born")]
@@ -31,7 +32,6 @@ namespace Veterinaria.Web.Data.Entities
 
         public string Remarks { get; set; }
 
-        public ICollection<History> Histories { get; set; }
 
         //TODO: replace the correct URL for the image
         public string ImageFullPath => string.IsNullOrEmpty(ImageUrl)
@@ -40,8 +40,14 @@ namespace Veterinaria.Web.Data.Entities
 
         [Display(Name = "Nacimiento")]
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime DateLocal => Born.ToLocalTime();
+
+        //Un propietario tiene muchas mascotas
+        public ICollection<Pet> Pets { get; set; }
+        public ICollection<History> Histories { get; set; }
+        public ICollection<Agenda> Agendas { get; set; }
+
     }
 
 }

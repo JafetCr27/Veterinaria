@@ -1,5 +1,6 @@
 ﻿namespace Veterinaria.Web.Data.Entities
 {
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     public class Owner
     {
@@ -28,5 +29,7 @@
         [Display(Name = "Propietario")]
         public string FullName => $"{FirstName} {LastName}";
         public string FullNameWithDocument => $"{FirstName} {LastName} - {Document}";
+
+        public ICollection<Agenda> Agendas { get; set; }
     }
 }
