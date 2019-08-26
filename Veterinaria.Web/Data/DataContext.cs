@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Veterinaria.Web.Data.Entities;
-
-namespace Veterinaria.Web.Data
+﻿namespace Veterinaria.Web.Data
 {
-    public class DataContext : DbContext
+    using System;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
+    using Veterinaria.Web.Data.Entities;
+    public class DataContext : IdentityDbContext<User>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -18,10 +18,6 @@ namespace Veterinaria.Web.Data
         public DbSet<Pet> Pets { get; set; }
         public DbSet<PetType> PetTypes { get; set; }
         public DbSet<ServiceType> ServiceTypes { get; set; }
-
-        internal Task CheckPetsAsync()
-        {
-            throw new NotImplementedException();
-        }
+        public DbSet<Manager> Managers{ get; set; }// Admins
     }
 }

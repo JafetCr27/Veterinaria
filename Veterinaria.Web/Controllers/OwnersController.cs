@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Veterinaria.Web.Data;
-using Veterinaria.Web.Data.Entities;
-
-namespace Veterinaria.Web.Controllers
+﻿namespace Veterinaria.Web.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Veterinaria.Web.Data;
+    using Veterinaria.Web.Data.Entities;
+ //   [Authorize(Roles = "Admin")]
     public class OwnersController : Controller
     {
         private readonly DataContext _context;
@@ -20,9 +18,11 @@ namespace Veterinaria.Web.Controllers
         }
 
         // GET: Owners
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Owners.ToListAsync());
+            return View(_context.Owners
+                    .Include(o=>o.User)
+                    .Include(o=>o.Pets));
         }
 
         // GET: Owners/Details/5
@@ -32,14 +32,17 @@ namespace Veterinaria.Web.Controllers
             {
                 return NotFound();
             }
-
             var owner = await _context.Owners
-                .FirstOrDefaultAsync(m => m.Id == id);
+                    .Include(o => o.User)
+                    .Include(o => o.Pets)
+                    .ThenInclude(p => p.PetType)
+                    .Include(o => o.Pets)
+                    .ThenInclude(p=>p.Histories)
+                    .FirstOrDefaultAsync(m => m.Id == id);
             if (owner == null)
             {
                 return NotFound();
             }
-
             return View(owner);
         }
 
@@ -54,7 +57,7 @@ namespace Veterinaria.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Document,FirstName,LastName,FixedPhone,CellPhone,Address")] Owner owner)
+        public async Task<IActionResult> Create([Bind("Id")] Owner owner)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +89,7 @@ namespace Veterinaria.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Document,FirstName,LastName,FixedPhone,CellPhone,Address")] Owner owner)
+        public async Task<IActionResult> Edit(int id, [Bind("Id")] Owner owner)
         {
             if (id != owner.Id)
             {

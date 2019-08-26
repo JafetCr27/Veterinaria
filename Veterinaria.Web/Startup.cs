@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Veterinaria.Web.Data;
+using Veterinaria.Web.Data.Entities;
+using Veterinaria.Web.Herlpers;
 
 namespace Veterinaria.Web
 {
@@ -33,12 +36,29 @@ namespace Veterinaria.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddIdentity<User, IdentityRole>(cfg =>
+             {
+                 cfg.User.RequireUniqueEmail = true;
+                 cfg.Password.RequireDigit = true;
+                 cfg.Password.RequiredUniqueChars = 0;
+                 cfg.Password.RequireLowercase = false;
+                 cfg.Password.RequireNonAlphanumeric = false;
+                 cfg.Password.RequireUppercase = false;
+             }).AddEntityFrameworkStores<DataContext>();
+
+            //services.AddIdentity<User, IdentityRole>(options =>
+            //    {
+            //        options.User.RequireUniqueEmail = true;
+            //    })
+            //    .AddEntityFrameworkStores<DataContext>()
+            //    .AddDefaultTokenProviders();
             services.AddDbContext<Data.DataContext>(cfg =>
             {
                 cfg.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
             services.AddTransient<SeedDb>();
+            services.AddScoped<IUserHelper, UserHelper>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -57,6 +77,7 @@ namespace Veterinaria.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseCookiePolicy();
 
             app.UseMvc(routes =>

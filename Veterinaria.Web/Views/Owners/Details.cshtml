@@ -4,51 +4,80 @@
     ViewData["Title"] = "Details";
 }
 
-<h2>Details</h2>
+<h2>Propietario</h2>
 
 <div>
-    <h4>Owner</h4>
+    <h4>Detalle</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Document)
+            @Html.DisplayNameFor(model => model.User.Document)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Document)
+            @Html.DisplayFor(model => model.User.Document)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.FirstName)
+            @Html.DisplayNameFor(model => model.User.FullName)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.FirstName)
+            @Html.DisplayFor(model => model.User.FullName)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.LastName)
+            @Html.DisplayNameFor(model => model.User.PhoneNumber)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.LastName)
+            @Html.DisplayFor(model => model.User.PhoneNumber)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.FixedPhone)
+            @Html.DisplayNameFor(model => model.User.Address)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.FixedPhone)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.CellPhone)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.CellPhone)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Address)
+            @Html.DisplayFor(model => model.User.Address)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
+    <a asp-action="AddPet" asp-route-id="@Model.Id" class="btn btn-primary">Agregar Mascota</a>
+    <a asp-action="Index" class="btn btn-danger">Regresar</a>
 </div>
+@if (Model.Pets.Count == 0)
+{
+    <h4>No hay mascotas registradas todavia</h4>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Raza</th>
+                <th>@Html.DisplayNameFor(model => model.Pets.FirstOrDefault().PetType.Name)</th>
+                <th>Nacimiento</th>
+                <th>
+                    # Registros
+                </th>
+                <th>@Html.DisplayNameFor(model => model.Pets.FirstOrDefault().Remarks)</th>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Pets)
+            {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Race)</td>
+                <td>@Html.DisplayFor(modelItem => item.PetType.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Born)</td>
+                <td>@Html.DisplayFor(modelItem => item.Histories.Count)</td>
+                <td>@Html.DisplayFor(modelItem => item.Remarks)</td>
+                <td>
+                    <a asp-action="EditPet" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="DetailsPet" asp-route-id="@item.Id" class="btn btn-info">Details</a>
+                    <a asp-action="DeletePet" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
