@@ -1,28 +1,46 @@
 ﻿namespace Veterinaria.Web.Controllers
 {
-    using Microsoft.AspNetCore.Authorization;
+    using Data;
+    using Data.Entities;
+    using Herlpers;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using Models;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using Veterinaria.Web.Data;
-    using Veterinaria.Web.Data.Entities;
- //   [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class OwnersController : Controller
     {
         private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
+        private readonly ICombosHelper _combosHelper;
+        private readonly IConverterHelper _converterHelper;
+        private readonly IImageHelper _imageHelper;
 
-        public OwnersController(DataContext context)
+        public OwnersController(DataContext context,
+            IUserHelper userhelper,
+            ICombosHelper combosHelper,
+            IConverterHelper converterHelper,
+            IImageHelper imageHelper
+            )
         {
             _context = context;
+            _userHelper = userhelper;
+            _combosHelper = combosHelper;
+            _converterHelper = converterHelper;
+            _imageHelper = imageHelper;
         }
 
         // GET: Owners
         public IActionResult Index()
         {
             return View(_context.Owners
-                    .Include(o=>o.User)
-                    .Include(o=>o.Pets));
+                    .Include(o => o.User)
+                    .Include(o => o.Pets));
         }
 
         // GET: Owners/Details/5
@@ -37,13 +55,51 @@
                     .Include(o => o.Pets)
                     .ThenInclude(p => p.PetType)
                     .Include(o => o.Pets)
-                    .ThenInclude(p=>p.Histories)
+                    .ThenInclude(p => p.Histories)
                     .FirstOrDefaultAsync(m => m.Id == id);
             if (owner == null)
             {
                 return NotFound();
             }
             return View(owner);
+        }
+        // GET: Owners/Details/5
+        public async Task<IActionResult> AddPet(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var owner = await _context.Owners.FindAsync(id.Value);
+            if (owner == null)
+            {
+                return NotFound();
+            }
+
+            return View(new PetViewModel
+            {
+                Born = DateTime.Today,
+                OwnerId = owner.Id,
+                PetTypes = _combosHelper.GetComboPetTypes()
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPet(PetViewModel petViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var path = string.Empty;
+                if (petViewModel.ImageFile != null)
+                {
+                    path = await _imageHelper.UploadImageAsync(petViewModel.ImageFile);
+                }
+                var pet = await _converterHelper.ToPetAsync(petViewModel, path);
+                _context.Pets.Add(pet);
+                await _context.SaveChangesAsync();
+                return RedirectToAction($"Details/{petViewModel.OwnerId}");
+            }
+            return View(petViewModel);
         }
 
         // GET: Owners/Create
@@ -52,20 +108,48 @@
             return View();
         }
 
-        // POST: Owners/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id")] Owner owner)
+        public async Task<IActionResult> Create(AddUserViewModel user)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(owner);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var response = await _userHelper.AddUserAsync(new User
+                {
+                    Address = user.Address,
+                    Document = user.Document,
+                    Email = user.UserName,
+                    FirstName = user.FirtsName,
+                    LastName = user.LastName,
+                    PhoneNumber = user.PhoneNumber,
+                    UserName = user.UserName,
+                }, user.Password);
+                if (response.Succeeded)
+                {
+                    var userInDb = await _userHelper.GetUserByEmailAsync(user.UserName);
+                    await _userHelper.AddUserToRoleAsync(userInDb, "Customer");
+                    var owner = new Owner
+                    {
+                        Agendas = new List<Agenda>(),
+                        Pets = new List<Pet>(),
+                        User = userInDb,
+                    };
+                    _context.Owners.Add(owner);
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    catch (Exception e)
+                    {
+
+                        ModelState.AddModelError(string.Empty, e.ToString());
+                        return View(user);
+                    }
+                }
+                ModelState.AddModelError(string.Empty, response.Errors.FirstOrDefault()?.Description);
             }
-            return View(owner);
+            return View(user);
         }
 
         // GET: Owners/Edit/5
@@ -84,9 +168,6 @@
             return View(owner);
         }
 
-        // POST: Owners/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id")] Owner owner)

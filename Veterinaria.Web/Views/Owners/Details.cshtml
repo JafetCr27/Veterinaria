@@ -3,9 +3,7 @@
 @{
     ViewData["Title"] = "Details";
 }
-
 <h2>Propietario</h2>
-
 <div>
     <h4>Detalle</h4>
     <hr />
@@ -51,6 +49,7 @@ else
         <thead>
             <tr>
                 <th>Nombre</th>
+                <th>Foto</th>
                 <th>Raza</th>
                 <th>@Html.DisplayNameFor(model => model.Pets.FirstOrDefault().PetType.Name)</th>
                 <th>Nacimiento</th>
@@ -64,19 +63,27 @@ else
         <tbody>
             @foreach (var item in Model.Pets)
             {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Race)</td>
-                <td>@Html.DisplayFor(modelItem => item.PetType.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Born)</td>
-                <td>@Html.DisplayFor(modelItem => item.Histories.Count)</td>
-                <td>@Html.DisplayFor(modelItem => item.Remarks)</td>
-                <td>
-                    <a asp-action="EditPet" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                    <a asp-action="DetailsPet" asp-route-id="@item.Id" class="btn btn-info">Details</a>
-                    <a asp-action="DeletePet" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <img class="img-circle" src="@Url.Content(item.ImageUrl)" alt="img" style="width: 150px; height: 150px; max-width: 100%;" />
+
+                        }
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Race)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PetType.Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Born)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Histories.Count)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Remarks)</td>
+                    <td>
+                        <a asp-action="EditPet" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                        <a asp-action="DetailsPet" asp-route-id="@item.Id" class="btn btn-info">Details</a>
+                        <a asp-action="DeletePet" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
