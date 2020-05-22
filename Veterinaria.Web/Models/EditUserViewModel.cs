@@ -25,11 +25,9 @@ namespace Veterinaria.Web.Models
         [Required]
         [MaxLength(50, ErrorMessage = "El {0} no puede tener mas de {1} caracteres")]
         public string Address { get; set; }
-
         [Display(Name = "Teléfono:")]
         [Required]
         [MaxLength(50, ErrorMessage = "El {0} no puede tener mas de {1} caracteres")]
         public string PhoneNumber { get; set; }
-
     }
 }
