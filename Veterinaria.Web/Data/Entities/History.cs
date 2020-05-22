@@ -13,7 +13,7 @@
         [Required]
         [Display(Name = "Fecha")]
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
         [Display(Name = "Comentarios")]
         [MaxLength(255)]

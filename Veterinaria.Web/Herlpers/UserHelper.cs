@@ -75,7 +75,6 @@ namespace Veterinaria.Web.Herlpers
             {
                 return true;
             }
-
             var response = await _userManager.DeleteAsync(user);
             return response.Succeeded;
         }

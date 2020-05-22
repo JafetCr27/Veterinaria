@@ -25,5 +25,18 @@
 
             return lista;
         }
+
+        public IEnumerable<SelectListItem> GetComboServiceTypes()
+        {
+            var lista = _dataContext.ServiceTypes.Select(pt => new SelectListItem { Value = $"{pt.Id}", Text = pt.Name })
+                .OrderBy(pt => pt.Text)
+                .ToList();
+            lista.Insert(0, new SelectListItem
+            {
+                Value = "0",
+                Text = " [Seleccione una opción]"
+            });
+            return lista;
+        }
     }
 }

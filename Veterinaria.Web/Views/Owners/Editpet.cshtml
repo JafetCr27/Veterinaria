@@ -1,0 +1,31 @@
+﻿@model Veterinaria.Web.Models.PetViewModel
+@{
+    ViewData["Title"] = "Editpet";
+}
+
+<h2>Editar</h2>
+
+<div class="row">
+    <div class="col-sm-4">
+        <form asp-action="Editpet" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="OwnerId" />
+            <input type="hidden" asp-for="ImageUrl" />
+            <partial name="_Pet"/>
+            <div class="form-group">
+                <input value="Guardar" type="submit" class="btn btn-success" />
+                <a asp-action="Details" asp-route-id="@Model.OwnerId" class="btn btn-danger">
+                    Regresar
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </a>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-4">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img class="img-responsive" alt="mascota" src="@Url.Content(Model.ImageUrl)"/>
+        }
+    </div>
+</div>

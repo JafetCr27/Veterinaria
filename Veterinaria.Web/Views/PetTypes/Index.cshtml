@@ -3,33 +3,71 @@
 @{
     ViewData["Title"] = "Index";
 }
+<div style="margin: 10px" class="panel panel-default">
+    <div class="panel-body">
+        <h4 class="text-primary">Tipo de Mascota</h4>
+        <hr />
+        <p>
+            <a class="btn btn-primary flotar" asp-action="Create">
+                Nuevo Cliente
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
+        </p>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Name)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+                                <td>
+ 
 
-<h2>Index</h2>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning flotar">
+                                        <span class="glyphicon glyphicon-edit"></span>
+                                        Editar
+                                    </a> |
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info flotar">
+                                        <span class="glyphicon glyphicon-list"></span> Detalle
+                                    </a> |
+                                    <button data-id="@item.Id" class="btn btn-danger flotar deleteItem" data-toggle="modal" data-target="#deleteDialog">
+                                        <span class="glyphicon glyphicon-trash"></span> Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+
+<partial name="_DeleteDialog" />
+@section Scripts{
+    @*@{await Html.RenderPartialAsync("_ValidationScriptsPartial")}*@
+    <script>
+        $(document).ready(() => {
+            var itemToDelete;
+            $(".deleteItem").click((e) => {
+                itemToDelete = e.currentTarget.dataset.id;
+            });
+            $("#btnYesDelete").click(() => {
+                window.location.href = '/PetTypes/Delete/' + itemToDelete;
+            });
+        });
+    </script>
 }
-    </tbody>
-</table>

@@ -1,0 +1,156 @@
+﻿@model Veterinaria.Web.Data.Entities.Pet
+
+@{
+    ViewData["Title"] = "DetailsPet";
+}
+<div style="margin: 10px" class="panel panel-body">
+    <h4 class="text-primary">Detalle Mascota</h4>
+    <hr />
+    <div class="row">
+        <div class="col-sm-6">
+            <dl class="dl-horizontal">
+                <dt>
+                    Propietario
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Owner.User.FullName)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Race)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Race)
+                </dd>
+                <dt>
+                    Fecha Nacimiento
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Born)
+                </dd>
+                <dt>
+                    Comentarios
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Remarks)
+                </dd>
+            </dl>
+        </div>
+        <div class="col-sm-6">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img style="display: block; margin: auto; width: 200px; height: auto" class="img-responsive img-circle" alt="mascota" src="@Url.Content(Model.ImageUrl)" />
+            }
+        </div>
+    </div>
+    <div class="row text-center">
+        <a asp-action="Editpet" asp-route-id="@Model.Id" class="btn btn-warning flotar">
+            <span class="glyphicon glyphicon-edit"></span> Editar
+        </a>
+        <a asp-action="AddHistory" asp-route-id="@Model.Id" class="btn btn-success flotar">
+            <span class="glyphicon glyphicon-plus"></span> Agregar Historia
+        </a>
+        @*<button onclick="AddHistory('@Model.Id')" class="btn btn-primary flotar">
+                <span class="glyphicon glyphicon-plus"></span> Agregar Historia
+            </button>*@
+
+        <a asp-action="Details" asp-route-id="@Model.Owner.Id" class="btn btn-danger flotar">
+            <span class="glyphicon glyphicon-refresh"></span>  Regresar al detalle propietario
+        </a>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h4 class="text-success">
+                Historias
+            </h4>
+            <hr />
+            @if (Model.Histories.Count == 0)
+            {
+                <h5>Sin historias</h5>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Histories.FirstOrDefault().Date)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Histories.FirstOrDefault().ServiceType.Name)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Histories.FirstOrDefault().Descripcion)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Histories.FirstOrDefault().Remarks)
+                            </th>
+                            <th>
+                                Acción
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Histories)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DateLocal)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ServiceType.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Descripcion)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Remarks)
+                                </td>
+                                <td>
+                                    <a asp-action="EditHistory" asp-route-id="@item.Id" class="btn btn-warning flotar">
+                                        <span class="glyphicon glyphicon-edit"></span> Editar
+                                    </a>
+                                    @*<a asp-action="DeleteHistory" asp-route-id="@item.Id" class="btn btn-danger flotar">
+                                        <span class="glyphicon glyphicon-edit"></span> Eliminar
+                                    </a>*@
+                                    <button data-id="@item.Id" class="btn btn-danger flotar deleteItem" data-toggle="modal" data-target="#deleteDialog">
+                                        <span class="glyphicon glyphicon-edit"></span> Eliminar
+                                    </button>
+
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+<partial name="_DeleteDialog" />
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    var AddHistory = (id) => {
+        $.get("@Url.Action("AddHistory","Owners")", {id:id}, (data, status, xhr) => {
+            console.log(xhr);
+            console.log(status);
+            $("#remplazar").html(data);
+            $('#modalHistory').modal('show');
+        });
+    }
+
+    $(document).ready(() => {
+        var itemToDelete;
+        $(".deleteItem").click((e) => {
+            itemToDelete = e.currentTarget.dataset.id;
+        });
+        $("#btnYesDelete").click(() => {
+            window.location.href = '/Owners/DeleteHistory/' + itemToDelete; 
+        });
+    });
+</script>

@@ -3,88 +3,133 @@
 @{
     ViewData["Title"] = "Details";
 }
-<h2>Propietario</h2>
-<div>
-    <h4>Detalle</h4>
+<div style="margin: 10px" class="panel panel-body">
+    <h4 class="text-primary">Detalle propietario</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.User.Document)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.User.Document)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.User.FullName)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.User.FullName)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.User.PhoneNumber)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.User.PhoneNumber)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.User.Address)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.User.Address)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
-    <a asp-action="AddPet" asp-route-id="@Model.Id" class="btn btn-primary">Agregar Mascota</a>
-    <a asp-action="Index" class="btn btn-danger">Regresar</a>
-</div>
-@if (Model.Pets.Count == 0)
-{
-    <h4>No hay mascotas registradas todavia</h4>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Foto</th>
-                <th>Raza</th>
-                <th>@Html.DisplayNameFor(model => model.Pets.FirstOrDefault().PetType.Name)</th>
-                <th>Nacimiento</th>
-                <th>
-                    # Registros
-                </th>
-                <th>@Html.DisplayNameFor(model => model.Pets.FirstOrDefault().Remarks)</th>
-                <td></td>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Pets)
-            {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+    <div class="row">
+        <div class="col-sm-6">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.User.Document)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.User.Document)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.User.FullName)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.User.FullName)
+                </dd>
+                <dt>
+                    Teléfono
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.User.PhoneNumber)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.User.Address)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.User.Address)
+                </dd>
+            </dl>
+        </div>
+    </div>
+    <div class="row text-center">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning flotar"> <span class="glyphicon glyphicon-edit"></span> Editar</a>
+        <a asp-action="AddPet" asp-route-id="@Model.Id" class="btn btn-primary flotar"><span class="glyphicon glyphicon-plus"></span> Agregar Mascota</a>
+        <a asp-action="Index" class="btn btn-danger flotar">
+            <span class="glyphicon glyphicon-refresh"></span> Regresar
+        </a>
+    </div>
+    <div class="row">
+        <div asp-validation-summary="All" class="text-danger"></div>
+    </div>
+    <div class="row">
+        @if (Model.Pets.Count == 0)
+        {
+            <div class="row text-center">
+                <hr />
+                <h4 class="text-danger">No hay mascotas registradas todavia</h4>
+                <hr />
+            </div>
+        }
+        else
+        {
+            <div class="col-sm-12">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Foto</th>
+                                <th>Raza</th>
+                                <th>Tipo</th>
+                                <th>Nacimiento</th>
+                                <th>
+                                    # Registros
+                                </th>
+                                <th>Comentarios</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Pets)
+                            {
+                                <tr>
+                                    <td style="white-space:nowrap">@Html.DisplayFor(modelItem => item.Name)</td>
 
-                    <td>
-                        @if (!string.IsNullOrEmpty(item.ImageUrl))
-                        {
-                            <img class="img-circle" src="@Url.Content(item.ImageUrl)" alt="img" style="width: 150px; height: 150px; max-width: 100%;" />
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img class="img-circle" src="@Url.Content(item.ImageUrl)" alt="img" style="width: 150px; height: 150px;" />
 
-                        }
-                    </td>
-                    <td>@Html.DisplayFor(modelItem => item.Race)</td>
-                    <td>@Html.DisplayFor(modelItem => item.PetType.Name)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Born)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Histories.Count)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Remarks)</td>
-                    <td>
-                        <a asp-action="EditPet" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                        <a asp-action="DetailsPet" asp-route-id="@item.Id" class="btn btn-info">Details</a>
-                        <a asp-action="DeletePet" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                                        }
+                                    </td>
+                                    <td style="white-space:nowrap">@Html.DisplayFor(modelItem => item.Race)</td>
+                                    <td style="white-space:nowrap">@Html.DisplayFor(modelItem => item.PetType.Name)</td>
+                                    <td style="white-space:nowrap">@Html.DisplayFor(modelItem => item.Born)</td>
+                                    <td style="white-space:nowrap">@Html.DisplayFor(modelItem => item.Histories.Count)</td>
+                                    <td>
+                                        <p>@item.Remarks</p>
+                                    </td>
+                                    <td>
+                                        <a asp-action="EditPet" asp-route-id="@item.Id" class="btn btn-warning flotar">
+                                            <span class="glyphicon glyphicon-edit"></span> Editar
+                                        </a>
+                                        <p> </p>
+                                        <a asp-action="DetailsPet" asp-route-id="@item.Id" class="btn btn-info flotar">
+                                            <span class="glyphicon glyphicon-list"></span> Historias
+                                        </a>
+                                        <p> </p>
+                                        <button data-id="@item.Id" class="btn btn-danger flotar deleteItem" data-toggle="modal" data-target="#deleteDialog">
+                                            <span class="glyphicon glyphicon-edit"></span> Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        }
+    </div>
+</div>
+<partial name="_DeleteDialog" />
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(() => {
+        var itemToDelete;
+        $(".deleteItem").click((e) => {
+            itemToDelete = e.currentTarget.dataset.id;
+        });
+        $("#btnYesDelete").click(() => {
+            console.log("asas");
+            window.location.href = '/Owners/DeletePet/' + itemToDelete;
+        });
+    });
+</script>
+
